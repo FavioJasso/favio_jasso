@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /backend/
+
+Sitemap: https://faviojasso.com/sitemap.xml
