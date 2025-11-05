@@ -1,6 +1,6 @@
 # FavioJasso
 
-Authored & Designed by : John Rey Calesa & Favio Jasso
+Authored & Designed by: Favio Jasso & John Rey Calesa 
 
 <h2>Tech Stack</h2>
 
