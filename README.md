@@ -28,7 +28,7 @@ Open to collaborations, technical discussions, and helping fellow builders bring
 - 🌐 [Portfolio](https://faviojasso.com)
 - 💼 [LinkedIn](https://www.linkedin.com/in/faviojasso/)
 - 🐙 [GitHub](https://github.com/FavioJasso)
-- 📧 [Email](mailto:jasso.favio@student.ccm.edu)
+- 📧 [Email](mailto:faviojasso@gmail.com)
 
 ---
 
