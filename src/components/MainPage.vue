@@ -182,7 +182,7 @@ onMounted(() => {
         </div>
         <div>
           <p class="text-base md:text-xl">
-            I am a Software Engineer at Transparent Energy, where I develop full-stack web applications, architect ETL pipelines, and automate workflows to save teams significant time and resources. Currently completing my Associates at County College of Morris, I will be pursuing a B.S. in Web & Information Systems at NJIT beginning in 2026, continuing to expand my expertise at the intersection of software and data systems.
+            Founder & CEO of <a href="https://caminocode.com" target="_blank" rel="noopener noreferrer" class="font-bold text-primary hover:underline">Camino Code</a>, an Applied AI and Data Science startup transforming New Jersey businesses through intelligent automation. As a Software Engineer at Transparent Energy, I architect full-stack applications, design ETL pipelines, and build automation systems that deliver measurable impact. Currently advancing my expertise in Applied A.I. at the New Jersey Institute of Technology.
           </p>
         </div>
         <div>
