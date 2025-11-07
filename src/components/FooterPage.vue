@@ -106,7 +106,7 @@
           </a>
         </div>
         <p class="hidden md:block italic md:text-lg lg:text-2xl font-bold text-right">
-          "Open to collaborations, technical discussions, and helping fellow builders bring their ideas to life."
+          "Always open to collaborations and helping builders bring their ideas to life."
         </p>
         <p class="text-sm md:text-lg lg:text-xl text-center md:text-right">
           © <span class="font-bold italic">Favio Jasso.</span> All rights reserved.
