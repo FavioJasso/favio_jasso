@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import emailjs from 'emailjs-com'
+import emailjs from '@emailjs/browser'
 // import axios from 'axios'
 import { useToast } from 'vue-toast-notification'
 const toast = useToast()
