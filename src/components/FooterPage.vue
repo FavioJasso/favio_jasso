@@ -6,67 +6,84 @@
       class="p-0 md:px-5 flex h-auto flex-col md:flex-row justify-around py-2 sm:py-10 lg:py-24 bg-[#FFA640] text-white xl:rounded-t-lg"
     >
       <form
-        class="flex flex-col w-full md:max-w-[675px] h-full md:max-h-[587px] gap-3 p-5 md:p-14 md:bg-white rounded-lg"
+        class="flex flex-col w-full md:max-w-[675px] h-full md:max-h-[587px] gap-3 p-5 md:p-14 md:bg-white rounded-lg transition-all duration-300"
         @submit.prevent="sendEmail"
       >
-        <div class="text-2xl md:text-4xl font-bold text-white md:text-primary">
+        <div class="text-2xl md:text-4xl font-bold text-white md:text-primary animate-fade-in">
           Connect with me!
         </div>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 animate-slide-up" style="animation-delay: 0.1s">
           <span
             class="text-sm md:text-2xl text-white md:text-primary font-bold uppercase md:capitalize"
           >
             Full Name
           </span>
           <input
-            class="w-full bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-orange-400 border-2"
+            class="w-full bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-lg focus:ring-2 focus:ring-orange-400 border-2 border-gray-200 hover:border-orange-300 transition-all duration-300 focus:scale-[1.01]"
             v-model="name"
             type="text"
             placeholder="Enter your Name"
+            :disabled="isLoading"
             required
           />
         </div>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 animate-slide-up" style="animation-delay: 0.2s">
           <span
             class="uppercase md:capitalize text-sm md:text-2xl text-white md:text-primary font-bold"
           >
             Email
           </span>
           <input
-            class="w-full bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-outline focus:ring-2 border-2 focus:ring-orange-400"
+            class="w-full bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-lg focus:ring-2 border-2 border-gray-200 focus:ring-orange-400 hover:border-orange-300 transition-all duration-300 focus:scale-[1.01]"
             v-model="email"
             type="email"
             placeholder="Enter your email address"
+            :disabled="isLoading"
             required
           />
         </div>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 animate-slide-up" style="animation-delay: 0.3s">
           <span
             class="uppercase md:capitalize text-sm md:text-2xl text-white md:text-primary font-bold"
           >
             Message
           </span>
           <textarea
-            class="w-full h-32 bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-orange-400 border-2 resize-1none scrollbar"
+            class="w-full h-32 bg-white text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-lg focus:ring-2 focus:ring-orange-400 border-2 border-gray-200 hover:border-orange-300 resize-none scrollbar transition-all duration-300 focus:scale-[1.01]"
             v-model="message"
             placeholder="Enter your Message"
+            :disabled="isLoading"
             required
           ></textarea>
         </div>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 animate-slide-up" style="animation-delay: 0.4s">
           <button
-            class="uppercase text-sm font-bold tracking-wide bg-primary text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline hover:bg-orange-700"
+            class="uppercase text-sm font-bold tracking-wide bg-primary text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-lg hover:bg-orange-700 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden group"
             type="submit"
+            :disabled="isLoading"
           >
-            Send Message
+            <span v-if="!isLoading" class="relative z-10">Send Message</span>
+            <span v-else class="flex items-center justify-center gap-2 relative z-10">
+              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending...
+            </span>
+            <span class="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
           </button>
         </div>
       </form>
       <div class="flex flex-col justify-center md:w-1/2 md:pl-14 md:pr-5 py-5 gap-8">
-        <div class="flex justify-center md:justify-end gap-3">
+        <div class="flex justify-center md:justify-end gap-3 animate-fade-in" style="animation-delay: 0.5s">
           <!-- linkedIn icon -->
-          <a href="https://www.linkedin.com/in/faviojasso/" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="size-12">
+          <a 
+            href="https://www.linkedin.com/in/faviojasso/" 
+            target="_blank"
+            class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
+            aria-label="LinkedIn Profile"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="size-12 hover:drop-shadow-lg">
               <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
               <path
                 fill="#ffffff"
@@ -75,8 +92,12 @@
             </svg>
           </a>
           <!-- phone icon -->
-          <a href="tel:+9732342073">
-            <svg xmlns="http://www.w3.org/2000/svg" class="size-12" viewBox="0 0 384 512">
+          <a 
+            href="tel:+9732342073"
+            class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
+            aria-label="Phone Number"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-12 hover:drop-shadow-lg" viewBox="0 0 384 512">
               <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
               <path
                 fill="#ffffff"
@@ -85,8 +106,12 @@
             </svg>
           </a>
           <!-- email icon -->
-          <a href="mailto:jasso.favio@student.ccm.edu">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-12">
+          <a 
+            href="mailto:jasso.favio@student.ccm.edu"
+            class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
+            aria-label="Email Address"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-12 hover:drop-shadow-lg">
               <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
               <path
                 fill="#ffffff"
@@ -95,8 +120,13 @@
             </svg>
           </a>
           <!-- github icon -->
-          <a href="https://github.com/FavioJasso" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="size-12">
+          <a 
+            href="https://github.com/FavioJasso" 
+            target="_blank"
+            class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
+            aria-label="GitHub Profile"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="size-12 hover:drop-shadow-lg">
               <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
               <path
                 fill="#ffffff"
@@ -105,10 +135,10 @@
             </svg>
           </a>
         </div>
-        <p class="hidden md:block italic md:text-lg lg:text-2xl font-bold text-right">
+        <p class="hidden md:block italic md:text-lg lg:text-2xl font-bold text-right animate-fade-in" style="animation-delay: 0.6s">
           "Always open to collaborations and helping builders bring their ideas to life."
         </p>
-        <p class="text-sm md:text-lg lg:text-xl text-center md:text-right">
+        <p class="text-sm md:text-lg lg:text-xl text-center md:text-right animate-fade-in" style="animation-delay: 0.7s">
           © <span class="font-bold italic">Favio Jasso.</span> All rights reserved.
         </p>
       </div>
@@ -126,9 +156,11 @@ const toast = useToast()
 const name = ref('')
 const email = ref('')
 const message = ref('')
+const isLoading = ref(false)
 const serviceID = 'service_wctmbgh'
 const templateID = 'template_2xgtcqw'
 const userID = 'nKYHmb69A350_7kwn'
+
 function sendEmail() {
   const fullMessage = {
     name: name.value,
@@ -137,20 +169,32 @@ function sendEmail() {
   }
 
   console.log(fullMessage)
+  isLoading.value = true
 
   emailjs
     .send(serviceID, templateID, fullMessage, userID)
     .then(() => {
       toast.open({
-        message: 'Email sent successfully!',
-        type: 'success'
+        message: '✅ Email sent successfully!',
+        type: 'success',
+        duration: 5000,
+        dismissible: true
       })
+      // Clear form after successful submission
+      name.value = ''
+      email.value = ''
+      message.value = ''
     })
     .catch(() => {
       toast.open({
-        message: 'Something went wrong. Please try again.',
-        type: 'error'
+        message: '❌ Something went wrong. Please try again.',
+        type: 'error',
+        duration: 5000,
+        dismissible: true
       })
+    })
+    .finally(() => {
+      isLoading.value = false
     })
   // axios
   //   .post('https://www.faviojasso.com/codeigniter4/public/send', fullMessage)
@@ -169,4 +213,34 @@ function sendEmail() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+</style>

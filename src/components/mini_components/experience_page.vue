@@ -13,7 +13,7 @@
       <div
         v-for="(item, index) in experiences"
         :key="index"
-        class="experience-item border-2 bg-white border-gray-200 border-opacity-60 rounded-xl p-5 lg:p-10 m-2 flex justify-between items-center gap-5 md:flex-col w-full md:w-[40%] lg:w-[30%] hover:shadow-2xl shadow-normal slide-bottom-to-top opacity-0 translate-y-10"
+        class="experience-item border-2 bg-white border-gray-200 border-opacity-60 rounded-xl p-5 lg:p-10 m-2 flex justify-between items-center gap-5 md:flex-col w-full md:w-[40%] lg:w-[30%] hover:shadow-2xl shadow-normal slide-bottom-to-top opacity-0 translate-y-10 transition-all duration-300 hover:scale-105 hover:-translate-y-2 hover:border-orange-300 cursor-pointer"
         ref="experienceItem"
       >
         <div class="w-1/2 md:w-full flex justify-center items-center flex-col gap-3">
@@ -24,11 +24,11 @@
           />
         </div>
         <div class="w-1/2 md:w-full flex justify-center items-center text-center flex-col gap-3">
-          <h1 class="text-xl sm:text-2xl font-bold text-secondary w-full">{{ item.college }}</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-secondary w-full transition-colors duration-300 group-hover:text-primary">{{ item.college }}</h1>
           <h1 class="text-lg font-medium md:max-w-[220px]">{{ item.position }}</h1>
           <button
             type="button"
-            class="text-sm sm:text-xl text-secondary border-2 bg-[#fff5ee] border-secondary p-2 w-full rounded border-radius shadow-normal hover:bg-secondary hover:text-white"
+            class="text-sm sm:text-xl text-secondary border-2 bg-[#fff5ee] border-secondary p-2 w-full rounded shadow-normal hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
             @click="openPopup(item)"
           >
             Read More
@@ -38,15 +38,16 @@
     </div>
     <div
       v-if="showDialog"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 p-4"
+      @click.self="closePopup"
     >
-      <div class="bg-white p-5 rounded max-w-4xl w-full border-2 border-primary-light">
-        <h2 class="text-2xl font-bold mb-4 text-primary">{{ selectedExperience.college }}</h2>
-        <p class="text-sm md:text-lg mb-4" v-html="selectedExperience.description"></p>
+      <div class="bg-white p-5 md:p-8 rounded-xl max-w-4xl w-full border-2 border-primary-light shadow-2xl transform transition-all duration-300 animate-modal-in max-h-[90vh] overflow-y-auto scrollbar">
+        <h2 class="text-2xl md:text-3xl font-bold mb-4 text-primary">{{ selectedExperience.college }}</h2>
+        <p class="text-sm md:text-lg mb-6 leading-relaxed" v-html="selectedExperience.description"></p>
         <div class="flex justify-end items-center w-full">
           <button
             @click="closePopup"
-            class="text-white bg-primary px-4 py-2 rounded hover:opacity-80"
+            class="text-white bg-primary px-6 py-3 rounded-lg hover:bg-orange-700 transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 font-semibold"
           >
             Close
           </button>
@@ -161,6 +162,21 @@ onMounted(() => {
   }
 }
 
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-in {
+  animation: modalIn 0.3s ease-out forwards;
+}
+
 .slide-up {
   animation: slideFromBottom 0.5s ease forwards;
 }
@@ -171,5 +187,14 @@ onMounted(() => {
     transform 0.3s ease;
   opacity: 0;
   transform: translateY(36px);
+}
+
+.experience-item {
+  transition: all 0.3s ease;
+}
+
+.experience-item:hover img {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
 }
 </style>

@@ -11,39 +11,39 @@
       <div
         v-for="(item, index) in experiences"
         :key="index"
-        class="project-item border-2 bg-white border-gray-200 border-opacity-60 rounded-xl m-2 p-2 gap-2 flex justify-between items-center md:flex-col w-full md:w-[37.5%] lg:w-[32.5%] hover:shadow-2xl shadow-normal"
+        class="project-item border-2 bg-white border-gray-200 border-opacity-60 rounded-xl p-3 md:p-5 gap-3 flex flex-col justify-start items-center w-full md:w-[calc(33.333%-1rem)] lg:w-[calc(31%-1rem)] hover:shadow-2xl shadow-normal transition-all duration-300 hover:scale-105 hover:-translate-y-2 hover:border-orange-300"
         :class="{
           'slide-from-left': index === 0,
-          'slide-from-right': index === experiences.length - 1
+          'slide-from-right': index === experiences.length - 1,
+          'slide-from-bottom': index > 0 && index < experiences.length - 1
         }"
         ref="projectItem"
       >
-        <div class="size-1/2 h-full flex md:size-[90%] md:p-2 justify-center items-center">
+        <div class="w-full flex justify-center items-center p-2">
           <img
-            class="rounded-lg object-contain size-full lg:size-full"
+            class="rounded-lg object-contain w-full h-48 md:h-56"
             :src="item.image"
             :alt="item.description"
           />
         </div>
-        <div
-          class="w-1/2 md:w-full lg:[60%] p-2 md:p-3 flex flex-col justify-center text-center items-center gap-3"
-        >
-          <h1 class="text-xl sm:text-2xl font-bold">{{ item.position }}</h1>
-          <h1 class="text-lg font-medium text-center hidden sm:block">
-            <div>{{ item.description }}</div>
-          </h1>
-          <div class="w-full flex flex-col xl:flex-row gap-3">
+        <div class="w-full flex flex-col justify-start text-center items-center gap-3 flex-grow">
+          <h1 class="text-lg sm:text-xl md:text-2xl font-bold">{{ item.position }}</h1>
+          <p class="text-sm md:text-base text-gray-700 leading-relaxed">
+            {{ item.description }}
+          </p>
+          <div class="w-full flex flex-col sm:flex-row gap-3 mt-auto">
             <a
               :href="item.link"
               target="_blank"
-              class="text-sm sm:text-xl w-full text-secondary border-2 bg-[#fff5ee] border-secondary p-2 rounded border-radius shadow-normal hover:bg-secondary hover:text-white"
+              class="text-sm sm:text-xl w-full text-secondary border-2 bg-[#fff5ee] border-secondary p-2 rounded shadow-normal hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 text-center font-semibold"
             >
               {{ item.button }}
             </a>
             <a
+              v-if="item.videoLink"
               :href="item.videoLink"
               target="_blank"
-              class="text-sm sm:text-xl text-secondary border-2 bg-[#fff5ee] border-secondary p-2 w-full rounded border-radius shadow-normal hover:bg-secondary hover:text-white"
+              class="text-sm sm:text-xl text-secondary border-2 bg-[#fff5ee] border-secondary p-2 w-full rounded shadow-normal hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 text-center font-semibold"
               >Video</a
             >
           </div>
@@ -57,10 +57,19 @@
 import { onMounted } from 'vue'
 const experiences = [
   {
+    position: 'Founder & CEO',
+    image: '/image/CaminoCodeSquareLogo.png',
+    description:
+      'Applied AI startup delivering 5+ projects with ongoing clients. Transforming businesses through intelligent automation and machine learning solutions.',
+    button: 'Visit Website',
+    link: 'https://caminocode.com',
+    videoLink: null
+  },
+  {
     position: 'Front—End Developer',
     image: '/image/ap.png',
     description:
-      'Data3D is a hackathon submission project for HackTCNJ2024.  I used HTML, CSS, JavaScript, a-frameJs, threeJs, to create our 3D augmented reality environment to host our 3D objects! ',
+      'Hackathon project for HackTCNJ2024. Built a 3D augmented reality environment using HTML, CSS, JavaScript, A-Frame, and Three.js.',
     button: 'Github',
     link: 'https://github.com/FavioJasso/D3DFrontend',
     videoLink: 'https://youtu.be/_2OsnLILwTI'
@@ -69,7 +78,7 @@ const experiences = [
     position: 'Analyst & Team Captain',
     image: '/image/asa.png',
     description:
-      'Representing County College of Morris, my team and I won Best Statistical Analysis in A.S.A. Data Fest 2024. Analyzing over 3 million data points and demonstrating high level topics in Data Science.',
+      'Won Best Statistical Analysis at A.S.A. Data Fest 2024. Analyzed 3+ million data points demonstrating advanced Data Science techniques.',
     button: 'Presentation',
     link: 'https://drive.google.com/file/d/1pu0Z-T2j5GHh1wjnm0cjQdD2ENWWBx1o/view',
     videoLink: 'https://youtu.be/G3K2Pz4gKl0?si=VYJFETQ8ZBMEP0eU'
@@ -85,7 +94,8 @@ const handleScroll = () => {
           const element = entry.target
           if (
             element.classList.contains('slide-from-left') ||
-            element.classList.contains('slide-from-right')
+            element.classList.contains('slide-from-right') ||
+            element.classList.contains('slide-from-bottom')
           ) {
             element.classList.add('animate')
           } else {
@@ -132,9 +142,22 @@ onMounted(() => {
   }
 }
 
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .project-item {
   opacity: 0;
   animation: none;
+  transition: all 0.3s ease;
 }
 
 .project-item.slide-from-left.animate {
@@ -143,5 +166,14 @@ onMounted(() => {
 
 .project-item.slide-from-right.animate {
   animation: slideInFromRight 0.6s forwards;
+}
+
+.project-item.slide-from-bottom.animate {
+  animation: slideInFromBottom 0.6s forwards;
+}
+
+.project-item:hover img {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
 }
 </style>

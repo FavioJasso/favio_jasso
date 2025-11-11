@@ -2,7 +2,10 @@
 @import url(https://fonts.bunny.net/css?family=inter:500|poppins:500);
 
 * {
-  @apply transition-all m-0 p-0 box-border;
+  transition: all 0.3s ease;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {
@@ -59,13 +62,48 @@ p {
 
 /* For Chrome, EDGE, Opera, Others */
 .scrollbar::-webkit-scrollbar {
-  width: 20px;
+  width: 12px;
 }
 
 .scrollbar::-webkit-scrollbar-track {
   background: #fff;
+  border-radius: 10px;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background: #000;
+  background: linear-gradient(180deg, #FF8800, #FF9500);
+  border-radius: 10px;
+  border: 2px solid #fff;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF9500, #FFAA00);
+}
+
+/* Mejoras de accesibilidad */
+*:focus-visible {
+  outline: 2px solid #FF8800;
+  outline-offset: 2px;
+}
+
+/* Animaciones suaves para reducir movimiento si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mejor contraste para textos */
+::selection {
+  background-color: #FFB740;
+  color: #000;
+}
+
+/* Smooth scroll para navegación */
+html {
+  scroll-padding-top: 100px;
 }
