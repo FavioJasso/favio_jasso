@@ -9,13 +9,16 @@
     </div>
     <div class="flex justify-around items-center w-full flex-wrap gap-2 p-5 sm:gap-10">
       <div
-        class="relative size-[100px] bg-white sm:size-[150px] md:size-[200px] border-2 border-opacity-60 rounded-lg flex justify-around items-center p-2 sm:p-5 hover:scale-105 hover:shadow-normal slide-bottom-to-top opacity-0 translate-y-10"
+        class="relative size-[100px] bg-white sm:size-[150px] md:size-[200px] border-2 border-opacity-60 rounded-lg flex justify-around items-center p-2 sm:p-5 hover:scale-110 hover:shadow-lg slide-bottom-to-top opacity-0 translate-y-10 transition-all duration-300 cursor-pointer hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
         v-for="(item, index) in icons"
         :key="index"
         :style="`border-color: ${item.color}`"
         :class="`${item.hoverColor}`"
         @mouseover="showSkillName(item.name)"
         @mouseleave="hideSkillName"
+        tabindex="0"
+        @focus="showSkillName(item.name)"
+        @blur="hideSkillName"
       >
         <img
           class="size-[150px] w-full object-contain object-center"
@@ -24,7 +27,7 @@
         />
         <div
           v-if="showDialog && currentSkill === item.name"
-          class="absolute inset-x-0 -top-10 sm:-top-12 md:-top-16 flex items-center justify-center text-white text-xs sm:text-sm text-center md:text-2xl font-bold transition-opacity duration-300 rounded-xl shadow-normal p-2"
+          class="absolute inset-x-0 -top-10 sm:-top-12 md:-top-16 flex items-center justify-center text-white text-xs sm:text-sm text-center md:text-2xl font-bold transition-all duration-300 rounded-xl shadow-lg p-2 animate-bounce-in z-10"
           :class="`${item.skillsNameBackground}`"
           id="skillName"
         >
@@ -190,6 +193,24 @@ onMounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes bounceIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  50% {
+    transform: translateY(2px) scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.4s ease-out forwards;
 }
 
 .slide-up {
