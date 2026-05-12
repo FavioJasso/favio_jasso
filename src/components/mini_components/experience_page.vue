@@ -99,13 +99,14 @@ const experiences = [
     college: 'Transparent Energy',
     position: 'Lead Software Engineer',
     location: 'Fairfield, NJ',
-    date: 'Nov 2024 - Present',
+    date: 'Apr 2025 - Present',
     image: '/image/transparent.svg',
     description: `<ul class="ml-3 list-disc space-y-2">
-    <li>Developed and maintained full-stack applications (<b>Vue.js, Laravel, MySQL</b>) powering internal platforms which host operations company-wide.</li>
-    <li>Led product development initiatives for internal workflow automation, saving <b>$100,000+ in annual analyst time</b> and improving operational efficiency across multiple departments.</li>
-    <li>Built <b>Python-driven data extraction</b> and transformation workflows to load unstructured data (CSV, XLSX, PDF) into MySQL, processing <b>15 Million+ data points</b>.</li>
-    <li>Led initiatives by designing cloud-integrated solutions on <b>AWS</b> & implemented <b>Datadog</b> monitoring for stability, observability, and user-impact tracking.</li>
+    <li>Architect, develop, and maintain full-stack internal platforms (<b>Vue.js, Laravel, Python, MySQL</b>) supporting energy pricing, operations, and analytics company-wide.</li>
+    <li>Designed and implemented <b>AI-assisted automation pipelines</b> that eliminated manual analyst workflows, generating <b>$100,000+ in annual productivity savings</b>.</li>
+    <li>Led adoption of AI-augmented engineering practices using <b>Claude and Cursor</b>, contributing to a <b>35%+ increase in delivery velocity</b> across the team.</li>
+    <li>Owned delivery reliability, deployments, and operational risk across <b>AWS-hosted platforms</b>, introducing monitoring and standardized SDLC practices.</li>
+    <li class="pt-2 border-t border-gray-200 mt-2"><i>Earlier role: <b>Junior Data Engineer / Associate Data Analyst</b> (Nov 2024 – Apr 2025).</i></li>
   </ul>`
   },
   {
