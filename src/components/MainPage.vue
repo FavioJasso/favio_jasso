@@ -1,6 +1,8 @@
 <script setup>
+import Education from './mini_components/education_page.vue'
 import Skills from './mini_components/skills_page.vue'
 import Experience from './mini_components/experience_page.vue'
+import Leadership from './mini_components/leadership_page.vue'
 import Project from './mini_components/project_page.vue'
 import Footer from '../components/FooterPage.vue'
 
@@ -200,13 +202,27 @@ onMounted(() => {
             Founder & CEO of <a href="https://caminocode.com" target="_blank" rel="noopener noreferrer" class="font-bold text-primary hover:underline">Camino Code</a>, an Applied AI and Data Science startup transforming New Jersey businesses through intelligent automation. As a Software Engineer at Transparent Energy, I architect full-stack applications, design ETL pipelines, and build automation systems that deliver measurable impact. Currently advancing my expertise in Applied A.I. at the New Jersey Institute of Technology.
           </p>
         </div>
-        <div>
+        <div class="flex flex-wrap gap-3">
           <a
             type="button"
-            class="inline-block rounded border-2 border-secondary p-2 sm:p-3 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 shadow-normal hover:shadow-lg hover:scale-105 active:scale-95 font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+            class="inline-flex items-center gap-2 rounded border-2 border-secondary p-2 sm:p-3 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 shadow-normal hover:shadow-lg hover:scale-105 active:scale-95 font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
             href="#contact"
           >
             Let's Connect
+          </a>
+          <a
+            type="button"
+            class="inline-flex items-center gap-2 rounded border-2 border-primary bg-primary text-white p-2 sm:p-3 hover:bg-orange-700 hover:border-orange-700 transition-all duration-300 shadow-normal hover:shadow-lg hover:scale-105 active:scale-95 font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+            href="/FavioJassoResume2026.pdf"
+            target="_blank"
+            rel="noopener"
+            download
+            aria-label="Download Favio Jasso's resume (PDF)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+            </svg>
+            Download Resume
           </a>
         </div>
       </div>
@@ -223,8 +239,10 @@ onMounted(() => {
     </div>
   </div>
   <div class="flex flex-col justify-center items-center">
+    <Education id="education" />
     <Skills id="skills" />
     <Experience id="experience" />
+    <Leadership id="leadership" />
     <Project id="projects" />
     <Footer id="contact" />
   </div>
