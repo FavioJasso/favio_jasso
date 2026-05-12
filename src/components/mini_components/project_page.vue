@@ -57,7 +57,7 @@
 import { onMounted } from 'vue'
 const experiences = [
   {
-    position: 'Founder & CEO',
+    position: 'Founder & Chief of Product',
     image: '/image/CaminoCodeSquareLogo.png',
     description:
       'Applied AI startup delivering 5+ projects with ongoing clients. Transforming businesses through intelligent automation and machine learning solutions.',
