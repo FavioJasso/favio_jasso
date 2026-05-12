@@ -93,7 +93,7 @@
           </a>
           <!-- phone icon -->
           <a 
-            href="tel:+9732342073"
+            href="tel:+19732342073"
             class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
             aria-label="Phone Number"
           >
@@ -107,7 +107,7 @@
           </a>
           <!-- email icon -->
           <a 
-            href="mailto:jasso.favio@student.ccm.edu"
+            href="mailto:faviojasso@gmail.com"
             class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-400 rounded-lg p-1"
             aria-label="Email Address"
           >
