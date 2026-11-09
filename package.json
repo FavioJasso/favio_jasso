@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
   "dependencies": {
     "@emailjs/browser": "^4.0.0",
+    "gsap": "^3.15.1",
+    "postprocessing": "6.39.6",
+    "three": "0.187.0",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3",
-    "vue-toast-notification": "^3.1.2"
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

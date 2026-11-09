@@ -34,19 +34,23 @@ Open to collaborations, technical discussions, and helping fellow builders bring
 
 ## 🛠 Tech Stack
 
-This portfolio is built with modern web technologies:
+A 3D, console-themed portfolio. The console, stage and audio are generated in code. Photos and logos are the only image files.
 
-- **Framework**: [Vue.js 3](https://vuejs.org/) - Progressive JavaScript framework
-- **Build Tool**: [Vite](https://vitejs.dev/) - Next generation frontend tooling
-- **Styling**: [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
-- **Email Integration**: [EmailJS](https://www.emailjs.com/) - Client-side email service
-- **Notifications**: [Vue Toast Notification](https://github.com/ankurk91/vue-toast-notification) - Elegant user feedback
+- **Framework**: [Vue.js 3](https://vuejs.org/) and [Vue Router](https://router.vuejs.org/) for content, menus and URLs
+- **3D**: [three.js](https://threejs.org/) r187 (pinned), [postprocessing](https://github.com/pmndrs/postprocessing)
+- **Motion**: [GSAP](https://gsap.com/) for authored sequences, hand-written springs for anything the pointer touches
+- **Audio**: synthesized at runtime with the Web Audio API
+- **Build Tool**: [Vite](https://vitejs.dev/), plus a prerender step so all content ships as HTML
+- **Styling**: [TailwindCSS](https://tailwindcss.com/) base with custom CSS
+- **Email Integration**: [EmailJS](https://www.emailjs.com/)
+
+Research and design decisions are in [docs/console-redesign.md](docs/console-redesign.md).
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 
 ### Installation
@@ -95,32 +99,30 @@ npm run format
 
 ```
 favio_jasso/
-├── public/              # Static assets
-│   ├── icons/          # Technology icons
-│   └── image/          # Images and graphics
+├── public/              # Static assets (resume, icons, images)
+├── scripts/
+│   └── prerender.mjs    # Writes the full portfolio into dist/index.html
 ├── src/
-│   ├── components/     # Vue components
-│   │   ├── mini_components/  # Reusable sub-components
-│   │   ├── FooterPage.vue    # Contact form & footer
-│   │   ├── HeaderPage.vue    # Navigation header
-│   │   └── MainPage.vue      # Main landing section
-│   ├── router/         # Vue Router configuration
-│   ├── views/          # Page views
-│   ├── App.vue         # Root component
-│   └── main.js         # Application entry point
-├── index.html          # HTML entry point
-├── vite.config.js      # Vite configuration
-└── tailwind.config.js  # Tailwind configuration
+│   ├── data/content.js  # All site copy. Edit content here.
+│   ├── components/      # Section panels, plain version, contact form
+│   ├── engine/          # three.js scene, boot timeline, audio, quality tiers
+│   ├── App.vue          # Phases, routing, keyboard and gamepad input
+│   └── main.js          # Application entry point
+├── index.html           # HTML entry point and SEO metadata
+└── vercel.json          # Serves index.html for section URLs
 ```
 
 ## 🎨 Features
 
-- ✨ **Modern UI/UX** - Clean, professional design with smooth animations
-- 📱 **Fully Responsive** - Optimized for all devices and screen sizes
-- 🎯 **SEO Optimized** - Meta tags and semantic HTML for better search visibility
+- 💿 **Boot it your way** - Drag a disc into the console, or power on empty for the system menu
+- 🧊 **One body of blocks** - The same cubes form the boot monogram and every menu icon
+- 🕹 **Every input** - Mouse, touch, keyboard and gamepad
+- 🔊 **Original sound** - Every chime, click and whir is synthesized
+- ♿ **Plain version** - All content as ordinary HTML at `/plain`, used automatically without WebGL
+- 🎯 **Crawlable** - The full portfolio is prerendered into the home page, and each section has a shareable URL
 - 📬 **Contact Form** - Integrated email functionality with EmailJS
-- 🎭 **Smooth Animations** - Intersection Observer API for scroll-triggered animations
-- ⚡ **Fast Performance** - Optimized build with Vite for lightning-fast load times
+
+Handy for testing: `?quality=low|mid|high` forces a quality tier and `?reduced` previews reduced motion.
 
 ## 👥 Credits
 

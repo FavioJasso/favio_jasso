@@ -36,16 +36,28 @@
   <meta name="geo.placename" content="Newark, New Jersey">
   
   <!-- Theme Color for Mobile Browsers -->
-  <meta name="theme-color" content="#FF8800">
+  <meta name="theme-color" content="#020109">
   <meta name="msapplication-TileColor" content="#FF8800">
   
   <title>Favio Jasso - Lead Software Engineer & AI Startup Founder | Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700|m-plus-rounded-1c:500,800&display=swap">
+
+  <!-- First paint is the dark stage. The prerendered content below stays visible
+       when JavaScript is off, and crawlers read it either way. -->
+  <style>
+    html { background: #020109; color-scheme: dark; }
+    /* Revealed after a delay if the app never mounts, so a failed script can't leave a blank page. */
+    html.js:not(.mounted) #app > .plain { visibility: hidden; animation: reveal 0s 6s forwards; }
+    @keyframes reveal { to { visibility: visible; } }
+  </style>
+  <script>document.documentElement.classList.add('js')</script>
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="app"><!--prerender--></div>
   <script type="module" src="/src/main.js"></script>
-  <script src="https://kit.fontawesome.com/185833903f.js" crossorigin="anonymous"></script>
   
   <!-- Structured Data (JSON-LD) - Person -->
   <script type="application/ld+json">
