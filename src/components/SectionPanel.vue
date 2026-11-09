@@ -9,6 +9,8 @@ import {
   projects,
   contact,
   sections,
+  disclaimer,
+  copyright,
   blocksFor,
   runs
 } from '../data/content.js'
@@ -20,9 +22,9 @@ const props = defineProps({
   selectedDisc: { type: Number, default: 0 },
   activeSkill: { type: Number, default: -1 }
 })
-const emit = defineEmits(['close', 'select-disc', 'focus-skill'])
+const emit = defineEmits(['close', 'select-disc', 'focus-skill', 'kick-skill'])
 
-const heading = ref(null)
+const body = ref(null)
 const openSave = ref(0)
 const meta = computed(() => sections.find((s) => s.id === props.id))
 const project = computed(() => projects[props.selectedDisc])
@@ -42,23 +44,27 @@ function changeDisc(step) {
   emit('select-disc', (props.selectedDisc + step + projects.length) % projects.length)
 }
 
-// Move focus into the panel on open, so keyboard and screen reader users land
-// on the new content rather than being left behind on the menu.
-const focusHeading = () => nextTick(() => heading.value?.focus({ preventScroll: true }))
-onMounted(focusHeading)
-watch(() => props.id, focusHeading)
+// Focus the scrolling body on open: screen readers announce the panel by name,
+// and arrows, Space and Page Down scroll it straight away.
+const enter = () =>
+  nextTick(() => {
+    if (body.value) body.value.scrollTop = 0
+    body.value?.focus({ preventScroll: true })
+  })
+onMounted(enter)
+watch(() => props.id, enter)
 </script>
 
 <template>
-  <section class="panel" :aria-labelledby="`panel-${id}`" :data-section="id">
+  <main class="panel" :data-section="id">
     <header class="panel-head">
-      <h2 :id="`panel-${id}`" ref="heading" tabindex="-1">{{ meta.label }}</h2>
+      <h2 :id="`panel-${id}`">{{ meta.label }}</h2>
       <button type="button" class="back" @click="emit('close')">
         <span class="glyph glyph--b" aria-hidden="true">B</span> Back
       </button>
     </header>
 
-    <div class="panel-body">
+    <div ref="body" class="panel-body" tabindex="0" role="region" :aria-labelledby="`panel-${id}`">
       <!-- PROFILE -->
       <template v-if="id === 'profile'">
         <div class="profile">
@@ -76,6 +82,7 @@ watch(() => props.id, focusHeading)
         </p>
         <p class="actions">
           <a class="btn btn--primary" :href="person.resume" download>Download Resume</a>
+          <router-link class="btn btn--quiet" to="/connect">Let's Connect</router-link>
         </p>
         <h3 class="sub">Education</h3>
         <ul class="plain-list">
@@ -102,14 +109,14 @@ watch(() => props.id, focusHeading)
             {{ p.title }}
           </button>
         </div>
-        <article class="project" aria-live="polite">
+        <article class="project">
           <h3 class="project-title">{{ project.title }}</h3>
           <p class="kicker">{{ project.role }}</p>
           <p class="lede">{{ project.description }}</p>
           <p class="actions">
             <a
               v-for="(l, i) in project.links"
-              :key="l.href"
+              :key="i"
               class="btn"
               :class="i === 0 ? 'btn--primary' : 'btn--quiet'"
               :href="l.href"
@@ -133,6 +140,7 @@ watch(() => props.id, focusHeading)
         </p>
         <ul class="plain-list saves">
           <li v-for="(s, i) in saves" :key="s.org + s.position" class="save" :class="{ open: openSave === i }">
+            <h3>
             <button
               type="button"
               class="save-head"
@@ -150,6 +158,7 @@ watch(() => props.id, focusHeading)
               </span>
               <span class="save-blocks">{{ blocksFor(s.date) }}<small>blocks</small></span>
             </button>
+            </h3>
             <div v-show="openSave === i" :id="`save-${i}`" class="save-body">
               <p class="muted">{{ s.kind }} · {{ s.location }} · {{ s.date }}</p>
               <ul class="bullets">
@@ -173,7 +182,7 @@ watch(() => props.id, focusHeading)
 
       <!-- SKILLS -->
       <template v-else-if="id === 'skills'">
-        <p class="muted hint">Tap a block to give it a spin.</p>
+        <p class="muted hint">Press a skill or tap a block to give it a spin.</p>
         <ul class="skill-list">
           <li v-for="(s, i) in skills" :key="s.name">
             <button
@@ -185,6 +194,7 @@ watch(() => props.id, focusHeading)
               @blur="emit('focus-skill', -1)"
               @mouseenter="emit('focus-skill', i)"
               @mouseleave="emit('focus-skill', -1)"
+              @click="emit('kick-skill', i)"
             >
               <img :src="s.icon" alt="" width="22" height="22" loading="lazy" />
               {{ s.name }}
@@ -207,5 +217,6 @@ watch(() => props.id, focusHeading)
         <ContactForm />
       </template>
     </div>
-  </section>
+    <footer class="panel-foot">{{ copyright }} {{ disclaimer }}</footer>
+  </main>
 </template>

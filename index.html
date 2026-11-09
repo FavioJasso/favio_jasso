@@ -48,7 +48,9 @@
        when JavaScript is off, and crawlers read it either way. -->
   <style>
     html { background: #020109; color-scheme: dark; }
-    html.js:not(.mounted) #app > .plain { display: none; }
+    /* Revealed after a delay if the app never mounts, so a failed script can't leave a blank page. */
+    html.js:not(.mounted) #app > .plain { visibility: hidden; animation: reveal 0s 6s forwards; }
+    @keyframes reveal { to { visibility: visible; } }
   </style>
   <script>document.documentElement.classList.add('js')</script>
 </head>

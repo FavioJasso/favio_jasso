@@ -31,8 +31,7 @@ function discMaterial() {
     iridescence: 0.5,
     iridescenceIOR: 1.8,
     iridescenceThicknessMinimum: 180,
-    iridescenceThicknessMaximum: 460,
-    envMapIntensity: 1.25
+    iridescenceThicknessMaximum: 460
   })
   m.userData.uBow = { value: 0 }
   m.userData.uStrength = { value: 1 }
@@ -76,7 +75,9 @@ function discMaterial() {
  * @param label {title, sub, colors, image}
  */
 export function createDisc(label) {
-  if (!sharedGeo.body) {
+  // A disposed engine frees these with its scene, so reuse only within one engine.
+  if (!sharedGeo.body || sharedGeo.owner !== label.owner) {
+    sharedGeo.owner = label.owner
     sharedGeo.body = discGeometry()
     sharedGeo.label = new THREE.RingGeometry(0.22, DISC_R - 0.1, 128, 1)
     sharedGeo.label.rotateX(-Math.PI / 2)

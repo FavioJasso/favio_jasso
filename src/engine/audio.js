@@ -1,6 +1,5 @@
 // Every sound on the site is synthesized here at runtime with Web Audio. There
-// are no audio files, and the boot chime is an original melody written for this
-// site, so nothing is sampled from or modelled on any console's audio.
+// are no audio files, and the boot chime's notes were written for this site.
 
 const STORE_KEY = 'fj-muted'
 
@@ -34,10 +33,14 @@ class Audio {
       const d = this.noiseBuf.getChannelData(0)
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
       this.reverb = this.makeReverb()
-      // iOS can park the context as 'interrupted' after a call or a tab switch.
+      // Silence hidden tabs. Resuming also recovers iOS's 'interrupted' state.
       document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) this.ctx?.resume()
+        if (document.hidden) this.ctx?.suspend()
+        else this.ctx?.resume()
       })
+      this.ctx.onstatechange = () => {
+        if (this.ctx.state === 'running' && this.padWanted) this.padStart()
+      }
     }
     if (this.ctx.state !== 'running') this.ctx.resume()
   }
@@ -71,8 +74,14 @@ class Audio {
     }
   }
 
+  /**
+   * True once sound will actually be heard. resume() is async, so during the
+   * gesture that triggered it, scheduling is safe even before state flips.
+   */
   get ready() {
-    return !!this.ctx && this.ctx.state === 'running'
+    if (!this.ctx) return false
+    if (this.ctx.state === 'running') return true
+    return this.ctx.state === 'suspended' && !!navigator.userActivation?.isActive
   }
 
   tone({ freq, to, type = 'sine', dur = 0.12, gain = 0.2, at = 0, attack = 0.003, wet = false }) {
@@ -247,6 +256,7 @@ class Audio {
 
   /** Quiet ambient bed for the menu. Slow enough to forget it is there. */
   padStart() {
+    this.padWanted = true
     if (!this.ready || this.padNodes) return
     const t = this.ctx.currentTime
     const out = this.ctx.createGain()
@@ -277,6 +287,7 @@ class Audio {
     this.padNodes = { out, oscs, lfo }
   }
   padStop() {
+    this.padWanted = false
     if (!this.padNodes || !this.ctx) return
     const { out, oscs, lfo } = this.padNodes
     const t = this.ctx.currentTime

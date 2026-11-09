@@ -51,7 +51,7 @@ function poseFor(name, aspect) {
         return far(P(0.6, 3.2, 21, 0, -0.35, 0))
       default:
         // The sheet covers the lower 58%; frame the prop in the window above it.
-        return far(P(0.3, 3.6, 15, 0, 1.3, 0))
+        return far(P(0.3, 3.6, 15, 0, 1.95, 0))
     }
   }
   switch (name) {
@@ -92,7 +92,7 @@ export class Engine {
     this.lidTarget = 1
     this.spinSpeed = 0.35
     this.spinTarget = 0.35
-    this.heroHome = new THREE.Vector3(2.3, 1.14, 0.75)
+    this.heroHome = new THREE.Vector3(2.12, 1.14, 0.8)
     this.hero = {
       x: spring(this.heroHome.x),
       y: spring(this.heroHome.y),
@@ -145,6 +145,7 @@ export class Engine {
     this.console.setLid(1)
 
     this.heroDisc = createDisc({
+      owner: this,
       title: 'Favio Jasso',
       sub: 'The Portfolio Disc',
       colors: ['#ff8800', '#ff5f6d', '#4a3ce0'],
@@ -166,8 +167,8 @@ export class Engine {
     this.buildSkillCubes()
 
     // Post stack. Tone mapping is the last effect so bloom sees unclamped HDR.
-    // No MSAA here: multisampling a half-float buffer measured 3 fps against
-    // 57 fps without it on an Apple M4. SMAA runs after tone mapping instead.
+    // No MSAA on the half-float buffer: it is costly in memory and fill on phone
+    // GPUs. SMAA runs after tone mapping instead.
     const composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType })
     composer.addPass(new RenderPass(scene, this.camera))
     this.bloom = new BloomEffect({
@@ -188,7 +189,8 @@ export class Engine {
       )
     }
     effects.push(new VignetteEffect({ offset: 0.3, darkness: 0.62 }))
-    if (settings.grain) {
+    // Grain is animated noise, so it goes when motion is reduced.
+    if (settings.grain && !this.reduced) {
       const noise = new NoiseEffect({ blendFunction: BlendFunction.SOFT_LIGHT, premultiply: false })
       noise.blendMode.opacity.value = 0.14
       effects.push(noise)
@@ -197,7 +199,11 @@ export class Engine {
     effects.push(new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }))
     composer.addPass(new EffectPass(this.camera, ...effects))
     if (settings.smaa) {
-      const smaa = new EffectPass(this.camera, new SMAAEffect({ preset: SMAAPreset.HIGH }))
+      const smaaEffect = new SMAAEffect({ preset: SMAAPreset.HIGH })
+      // Edges are detected in linear light here, where darks are compressed, so
+      // the usual threshold would miss most edges on this dark scene.
+      smaaEffect.edgeDetectionMaterial.edgeDetectionThreshold = 0.02
+      const smaa = new EffectPass(this.camera, smaaEffect)
       smaa.dithering = true
       composer.addPass(smaa)
     }
@@ -217,7 +223,10 @@ export class Engine {
     })
 
     // Compile up front so the first frame of the experience doesn't hitch.
+    // Bind the composer's buffer first, as program variants depend on the target.
+    renderer.setRenderTarget(composer.inputBuffer)
     renderer.compile(scene, this.camera)
+    renderer.setRenderTarget(null)
     this.heroDisc.root.position.copy(this.heroHome)
 
     canvas.addEventListener('webglcontextlost', this.onContextLost)
@@ -253,7 +262,7 @@ export class Engine {
     this.discGroup.visible = false
     this.scene.add(this.discGroup)
     this.projectDiscs = projects.map((p) => {
-      const d = createDisc({ title: p.title, sub: p.role, colors: p.colors, image: p.image })
+      const d = createDisc({ owner: this, title: p.title, sub: p.role, colors: p.colors, image: p.image })
       d.root.scale.setScalar(0.95)
       this.discGroup.add(d.root)
       return {
@@ -327,10 +336,10 @@ export class Engine {
   }
 
   /** The disc waits beside the console, or in front of it on a narrow screen. */
-  placeHeroHome() {
+  placeHeroHome(snap = true) {
     if (this.camera.aspect < 1.15) this.heroHome.set(1.05, 0.62, 2.6)
-    else this.heroHome.set(2.3, 1.14, 0.75)
-    if (!this.hero.seated && !this.hero.inFlight && !this.hero.dragging) {
+    else this.heroHome.set(2.12, 1.14, 0.8)
+    if (snap && !this.hero.seated && !this.hero.inFlight && !this.hero.dragging) {
       this.hero.target.copy(this.heroHome)
       this.hero.x.x = this.heroHome.x
       this.hero.y.x = this.heroHome.y
@@ -362,6 +371,23 @@ export class Engine {
     gsap.to(this.fadeEl, { opacity: to, duration, ease: 'power2.inOut', overwrite: true })
   }
 
+  /** Tweens that run outside the boot timeline, so killing it misses them. */
+  killBootTweens() {
+    this.killTimeline()
+    for (const target of [
+      this.fadeEl,
+      this.console.ring,
+      this.bloom,
+      this.scene,
+      this.stage.key,
+      this.stage.rimViolet,
+      this.stage.rimOrange
+    ]) {
+      if (target) gsap.killTweensOf(target)
+    }
+    audio.whirStop()
+  }
+
   setLights(level, duration = 0) {
     const s = this.stage
     const apply = { env: 0.82 * level, key: 95 * level, violet: 42 * level, orange: 20 * level }
@@ -384,15 +410,21 @@ export class Engine {
 
   /** The opening shot: lid up, disc waiting. */
   toStage() {
-    this.killTimeline()
+    this.killBootTweens()
     this.mode = 'stage'
     this.section = null
     this.console.root.visible = true
     this.heroDisc.root.visible = true
     this.hero.seated = false
     this.hero.inFlight = false
+    this.placeHeroHome(false) // The window may have rotated since this was set.
     this.hero.target.copy(this.heroHome)
     this.lidTarget = 1
+    if (this.reduced) {
+      this.placeHeroHome(true)
+      this.lid.x = 1
+      this.lid.v = 0
+    }
     this.spinTarget = 0.35
     this.console.led.emissiveIntensity = 0.25
     this.console.ring.emissiveIntensity = 0.9
@@ -423,14 +455,17 @@ export class Engine {
     if (this.reduced) return this.finishBoot()
     this.hero.inFlight = true
     this.hero.dragging = false
+    const lidWasShut = this.lidTarget < 0.5
+    this.lidTarget = 1
     const H = this.console.height
     const seatY = H - 0.06
     const tl = gsap.timeline()
     this.timeline = tl
     const t = this.hero.target
     // Up first, then across, so the disc clears the corner of the console.
-    tl.to(t, { y: H + 1.0, duration: 0.3, ease: 'power2.out' })
-    tl.to(t, { x: 0, z: 0, duration: 0.5, ease: 'power2.inOut' }, 0.12)
+    const start = lidWasShut ? 0.35 : 0
+    tl.to(t, { y: H + 1.0, duration: 0.3, ease: 'power2.out' }, start)
+    tl.to(t, { x: 0, z: 0, duration: 0.5, ease: 'power2.inOut' }, start + 0.12)
     tl.to(t, { y: seatY, duration: 0.3, ease: 'power2.in' }, '>-0.02')
     tl.call(() => {
       audio.discSeat()
@@ -497,9 +532,7 @@ export class Engine {
 
   /** Reachable from the timeline or from Skip, so it must be idempotent. */
   finishBoot() {
-    this.killTimeline()
-    audio.whirStop()
-    gsap.killTweensOf(this.fadeEl)
+    this.killBootTweens()
     this.fade(0, this.reduced ? 0 : 0.35)
     this.console.root.visible = true
     this.heroDisc.root.visible = !!this.bootHasDisc
@@ -550,7 +583,8 @@ export class Engine {
 
   /** Go straight to a deep link, without any boot. */
   jumpTo(sectionId, hasDisc = true, shape = 'profile') {
-    this.killTimeline()
+    this.killBootTweens()
+    this.bloom.intensity = 0.62
     this.bootHasDisc = hasDisc
     this.finishBootQuiet()
     if (sectionId) this.openSection(sectionId, shape, true)
@@ -603,6 +637,7 @@ export class Engine {
   openSection(id, shape, instant = false) {
     this.mode = 'section'
     this.section = id
+    this.sectionOpenedAt = this.time
     this.discGroupOn = id === 'discs'
     this.skillGroupOn = id === 'skills'
     if (this.discGroupOn) this.discGroup.visible = true
@@ -622,6 +657,17 @@ export class Engine {
   setFocusSkill(i) {
     this.focusSkill = i
   }
+  /** Button-press equivalent of clicking a cube in the scene. */
+  kickSkill(i) {
+    const c = this.skillCubes[i]
+    if (!c || this.reduced) return
+    c.ry.v += 26
+    c.z.v += 5
+  }
+  setReduced(value) {
+    this.reduced = value
+    this.blocks.setReduced(value)
+  }
 
   // ---------------------------------------------------------------------
   // Pointer
@@ -640,6 +686,7 @@ export class Engine {
   }
 
   onPointerMove(e) {
+    this.lastPointerAt = this.time
     if (!this.renderer || !(e.target === this.canvas || this.hero.dragging || this.draggingDisc || this.yawDrag !== null)) {
       if (this.blocks) this.blocks.pointer.set(1e3, 1e3, 1e3)
       if (this.hoverSkill !== -1) this.setHoverSkill(-1)
@@ -747,9 +794,7 @@ export class Engine {
     if (this.mode === 'section' && this.section === 'skills') {
       const hit = this.pick(this.skillCubes.map((c) => c.mesh))
       if (hit) {
-        const c = this.skillCubes[hit.object.userData.index]
-        c.ry.v += 26
-        c.z.v += 5
+        this.kickSkill(hit.object.userData.index)
         audio.select()
         this.emit('skill-hover', { index: hit.object.userData.index, pinned: true })
       }
@@ -786,12 +831,20 @@ export class Engine {
     const realDt = gsap.ticker.deltaRatio(60) / 60
     const dt = Math.min(realDt, 1 / 20)
     this.time += dt
-    this.monitor.tick(realDt)
 
-    // While a panel is open and the visitor is reading, half the frame rate
-    // saves battery. Nothing there depends on being silky.
+    // Once the transition has settled and the pointer is still, a text panel only
+    // needs half the frame rate, which saves battery. Those skipped frames would
+    // read as a fast device, so the quality monitor sits them out.
     this.frameFlip = !this.frameFlip
-    const reading = this.mode === 'section' && !this.discGroupOn && !this.skillGroupOn && dt < 1 / 40
+    const reading =
+      this.mode === 'section' &&
+      !this.discGroupOn &&
+      !this.skillGroupOn &&
+      dt < 1 / 40 &&
+      this.time - (this.sectionOpenedAt || 0) > 2 &&
+      this.time - (this.lastPointerAt || 0) > 1
+    if (reading) this.monitor.hold(0.5)
+    else this.monitor.tick(realDt)
     this.updateConsole(dt)
     this.updateHero(dt)
     this.updateCamera(dt)
@@ -872,11 +925,20 @@ export class Engine {
       const ty = on ? (rel === 0 ? 0.28 : -0.42) : -5
       const tz = on ? (rel === 0 ? 1.4 : -0.7) : 0
       const ts = on ? (rel === 0 ? (portrait ? 1.4 : 1.85) : portrait ? 0.72 : 0.98) : 0.2
+      const tTilt = this.reduced ? 1.25 : rel === 0 ? 1.13 + this.pointerNdc.y * 0.13 : 1.2
+      const tRoll = this.reduced ? 0 : rel === 0 ? -this.pointerNdc.x * 0.16 : rel * 0.26
+      if (this.reduced) {
+        d.x.x = tx
+        d.y.x = ty
+        d.z.x = tz
+        d.s.x = ts
+        d.tiltX.x = tTilt
+        d.tiltZ.x = tRoll
+      }
       d.root.position.set(damp(d.x, tx, 0.17, dt), damp(d.y, ty, 0.17, dt), damp(d.z, tz, 0.17, dt))
       d.root.scale.setScalar(damp(d.s, ts, 0.17, dt))
-      const tTilt = rel === 0 ? 1.13 + this.pointerNdc.y * 0.13 : 1.2
-      d.root.rotation.x = damp(d.tiltX, this.reduced ? 1.25 : tTilt, 0.2, dt)
-      d.root.rotation.z = damp(d.tiltZ, rel === 0 ? -this.pointerNdc.x * 0.16 : rel * 0.26, 0.2, dt)
+      d.root.rotation.x = damp(d.tiltX, tTilt, 0.2, dt)
+      d.root.rotation.z = damp(d.tiltZ, tRoll, 0.2, dt)
       if (!(this.draggingDisc && this.draggingDisc.disc === d)) {
         const idle = this.reduced ? 0 : rel === 0 ? 0.3 : 0.16
         d.spinV += (idle - d.spinV) * Math.min(1, dt * 1.6)
@@ -897,8 +959,14 @@ export class Engine {
       const hot = i === this.hoverSkill || i === this.focusSkill
       const baseY = on ? c.home.y : c.home.y - 5.5
       c.mesh.position.x = c.home.x
-      c.mesh.position.y = wobble(c.y, baseY + (hot ? 0.06 : 0), 1.6, 0.6, dt)
-      c.mesh.position.z = wobble(c.z, hot ? 0.34 : 0, 2.2, 0.55, dt)
+      if (this.reduced) {
+        c.y.x = baseY
+        c.y.v = 0
+        c.z.x = 0
+        c.z.v = 0
+      }
+      c.mesh.position.y = wobble(c.y, baseY + (hot && !this.reduced ? 0.06 : 0), 1.6, 0.6, dt)
+      c.mesh.position.z = wobble(c.z, hot && !this.reduced ? 0.34 : 0, 2.2, 0.55, dt)
       const rxT = this.reduced ? 0 : -this.pointerNdc.y * 0.3 + (hot ? -0.08 : 0)
       const ryT = this.reduced ? 0 : this.pointerNdc.x * 0.4
       c.mesh.rotation.x = damp(c.rx, rxT, 0.14, dt)
@@ -930,6 +998,17 @@ export class Engine {
     this.canvas?.removeEventListener('pointerdown', this.onPointerDown)
     audio.padStop()
     audio.whirStop()
+    this.killBootTweens?.()
+    // Free GPU memory so returning from the plain version starts clean.
+    this.scene?.traverse((o) => {
+      o.geometry?.dispose()
+      for (const m of [].concat(o.material || [])) {
+        for (const v of Object.values(m)) if (v?.isTexture) v.dispose()
+        m.dispose()
+      }
+    })
+    this.scene?.environment?.dispose()
+    this.stage?.floor?.dispose?.()
     this.composer?.dispose()
     this.renderer?.dispose()
   }

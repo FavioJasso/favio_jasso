@@ -140,7 +140,8 @@ function buildShapes(budget) {
   }
 }
 
-export function createBlocks({ count = 640, reduced = false } = {}) {
+export function createBlocks({ count = 640, reduced: startReduced = false } = {}) {
+  let reduced = startReduced
   const geo = new RoundedBoxGeometry(1, 1, 1, 2, 0.16)
   const mat = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
@@ -155,8 +156,8 @@ export function createBlocks({ count = 640, reduced = false } = {}) {
     shader.fragmentShader = shader.fragmentShader.replace(
       '#include <emissivemap_fragment>',
       `#include <emissivemap_fragment>
-      #ifdef USE_INSTANCING_COLOR
-        totalEmissiveRadiance += vColor.rgb * 0.26;
+      #ifdef USE_COLOR
+        totalEmissiveRadiance += vColor.rgb * 0.16;
       #endif`
     )
   }
@@ -353,6 +354,10 @@ export function createBlocks({ count = 640, reduced = false } = {}) {
     update,
     pointer,
     onLand,
+    setReduced(value) {
+      reduced = value
+      if (value) snap()
+    },
     get shape() {
       return current
     }

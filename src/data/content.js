@@ -179,6 +179,8 @@ export const contact = {
   }
 }
 
+export const copyright = '© Favio Jasso. All rights reserved.'
+
 export const disclaimer =
   'An original tribute to the home consoles of the early 2000s. Not affiliated with or endorsed by Nintendo.'
 

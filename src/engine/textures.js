@@ -90,7 +90,9 @@ export function discLabel({ title, sub, colors, image }) {
   tex.colorSpace = THREE.SRGBColorSpace
   tex.anisotropy = 8
 
+  let art = null
   const paint = (img) => {
+    art = img
     ctx.clearRect(0, 0, size, size)
     const g = ctx.createLinearGradient(0, 0, size, size)
     colors.forEach((col, i) => g.addColorStop(i / (colors.length - 1), col))
@@ -98,14 +100,15 @@ export function discLabel({ title, sub, colors, image }) {
     ctx.fillRect(0, 0, size, size)
 
     if (img) {
+      // Kept inside the printable band so the disc's hub never bites into the art.
       ctx.save()
       ctx.beginPath()
-      ctx.arc(size / 2, size * 0.27, size * 0.145, 0, Math.PI * 2)
+      ctx.arc(size / 2, size * 0.155, size * 0.14, 0, Math.PI * 2)
       ctx.clip()
       ctx.fillStyle = '#fff'
       ctx.fillRect(0, 0, size, size)
-      const s = size * 0.29
-      ctx.drawImage(img, size / 2 - s / 2, size * 0.27 - s / 2, s, s)
+      const s = size * 0.28
+      ctx.drawImage(img, size / 2 - s / 2, size * 0.155 - s / 2, s, s)
       ctx.restore()
     }
 
@@ -120,9 +123,9 @@ export function discLabel({ title, sub, colors, image }) {
       } while (ctx.measureText(text).width > size * 0.72 && px > 18)
       ctx.fillText(text, size / 2, y)
     }
-    fit(title, 800, 74, size * 0.71)
+    fit(title, 800, 74, size * 0.725)
     ctx.globalAlpha = 0.85
-    fit(sub, 500, 38, size * 0.785)
+    fit(sub, 500, 38, size * 0.8)
     ctx.globalAlpha = 1
     tex.needsUpdate = true
   }
@@ -133,6 +136,8 @@ export function discLabel({ title, sub, colors, image }) {
       if (img) paint(img)
     })
   }
+  // The first paint may predate the webfont; repaint once it has arrived.
+  document.fonts?.load('800 74px "M PLUS Rounded 1c"').then(() => paint(art)).catch(() => {})
   return tex
 }
 
@@ -154,8 +159,12 @@ export function iconTile(src, accent) {
   loadImage(src).then((img) => {
     if (!img) return
     base()
-    const s = size * 0.62
-    ctx.drawImage(img, (size - s) / 2, (size - s) / 2 - 4, s, s)
+    // Fit by the icon's own aspect ratio; several are not square.
+    const box = size * 0.62
+    const k = box / Math.max(img.naturalWidth || 1, img.naturalHeight || 1)
+    const w = (img.naturalWidth || box) * k
+    const h = (img.naturalHeight || box) * k
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2 - 4, w, h)
     tex.needsUpdate = true
   })
   return tex

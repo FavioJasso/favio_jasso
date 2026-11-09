@@ -1,3 +1,12 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/(profile|discs|memory-card|skills|connect|plain)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(home|experience|leadership|projects|education|contact)",
+      "destination": "/index.html"
+    }
+  ]
 }

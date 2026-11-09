@@ -1,11 +1,11 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
+import { mergeGeometries, toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js'
 import { grainNormal } from './textures.js'
 
-// An original console design: the "FJ-01". It shares the era's spirit (a chunky,
-// saturated, top-loading toy of a machine) but has its own proportions, a round
-// smoked lid with an orange ring, two ports and an FJ block emblem.
+// The "FJ-01": a console modelled from scratch for this site, in the spirit of
+// early-2000s hardware (chunky, saturated, top-loading). Its round smoked lid,
+// orange ring, two ports and FJ block emblem are specific to this design.
 
 const W = 2.5 // footprint
 const H = 1.72
@@ -29,6 +29,7 @@ function roundedRectShape(w, h, r) {
   return s
 }
 
+/** Profile points run bottom to top on the outside, which makes faces point outward. */
 function latheFrom(points, segments = 96) {
   return new THREE.LatheGeometry(
     points.map(([x, y]) => new THREE.Vector2(x, y)),
@@ -40,11 +41,11 @@ function latheFrom(points, segments = 96) {
 function button(radius, material) {
   const geo = latheFrom(
     [
-      [0, 0.05],
-      [radius * 0.82, 0.05],
-      [radius * 0.96, 0.038],
+      [radius, 0],
       [radius, 0.012],
-      [radius, 0]
+      [radius * 0.96, 0.038],
+      [radius * 0.82, 0.05],
+      [0, 0.05]
     ],
     48
   )
@@ -77,7 +78,6 @@ export function createConsole({ tier = 'high' } = {}) {
     clearcoatRoughness: 0.35
   })
   const rubber = new THREE.MeshStandardMaterial({ color: 0x07051c, roughness: 0.92 })
-  const well = new THREE.MeshStandardMaterial({ color: 0x0a0726, roughness: 0.74 })
   const metal = new THREE.MeshStandardMaterial({ color: 0xc9cce0, roughness: 0.25, metalness: 1 })
   const orange = new THREE.MeshPhysicalMaterial({
     color: 0xff8800,
@@ -112,7 +112,8 @@ export function createConsole({ tier = 'high' } = {}) {
     curveSegments: 32
   })
   lowerGeo.rotateX(-Math.PI / 2)
-  const lower = new THREE.Mesh(lowerGeo, plastic)
+  // Extrusions are non-indexed, so without this the bevels shade as hard facets.
+  const lower = new THREE.Mesh(toCreasedNormals(lowerGeo, 0.6), plastic)
   lower.position.y = 0.12
   lower.castShadow = true
   lower.receiveShadow = true
@@ -131,7 +132,7 @@ export function createConsole({ tier = 'high' } = {}) {
     curveSegments: 96
   })
   slabGeo.rotateX(-Math.PI / 2)
-  const slab = new THREE.Mesh(slabGeo, plastic)
+  const slab = new THREE.Mesh(toCreasedNormals(slabGeo, 0.6), plastic)
   slab.position.y = H - 0.25
   slab.castShadow = true
   slab.receiveShadow = true
@@ -144,10 +145,11 @@ export function createConsole({ tier = 'high' } = {}) {
 
   // Disc well: dark bowl plus spindle.
   const bowl = new THREE.Mesh(
+    // Floor sits just above the shell's solid top; the wall sits inside the slab's hole.
     latheFrom([
-      [0, 0],
-      [LID_R - 0.06, 0],
-      [LID_R - 0.06, 0.26]
+      [0, 0.04],
+      [LID_R - 0.105, 0.04],
+      [LID_R - 0.105, 0.26]
     ]),
     new THREE.MeshStandardMaterial({ color: 0x0a0726, roughness: 0.7, side: THREE.DoubleSide })
   )
@@ -158,13 +160,12 @@ export function createConsole({ tier = 'high' } = {}) {
   const hub = new THREE.Mesh(
     latheFrom(
       [
-        [0, 0.27],
-        [0.05, 0.27],
-        [0.075, 0.25],
-        [0.078, 0.2],
-        [0.17, 0.19],
         [0.19, 0],
-        [0, 0]
+        [0.17, 0.19],
+        [0.078, 0.2],
+        [0.075, 0.25],
+        [0.05, 0.27],
+        [0, 0.27]
       ],
       48
     ),
@@ -189,13 +190,13 @@ export function createConsole({ tier = 'high' } = {}) {
 
   const rim = new THREE.Mesh(
     latheFrom([
-      [LID_R - 0.14, 0.012],
-      [LID_R - 0.1, 0.085],
-      [LID_R - 0.05, 0.1],
-      [LID_R - 0.01, 0.075],
-      [LID_R, 0.02],
+      [LID_R - 0.14, 0],
       [LID_R - 0.015, 0],
-      [LID_R - 0.14, 0]
+      [LID_R, 0.02],
+      [LID_R - 0.01, 0.075],
+      [LID_R - 0.05, 0.1],
+      [LID_R - 0.1, 0.085],
+      [LID_R - 0.14, 0.012]
     ]),
     plastic
   )

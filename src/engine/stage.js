@@ -105,7 +105,7 @@ export function createStage(scene, { tier = 'high' } = {}) {
       textureWidth: res,
       textureHeight: res,
       clipBias: 0.002,
-      multisample: 0, // The floor shader blurs this anyway; MSAA here cost half the frame rate.
+      multisample: 0, // The floor shader blurs this anyway, so MSAA would be wasted.
       shader: FloorShader
     })
   }

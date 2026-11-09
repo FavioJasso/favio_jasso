@@ -10,6 +10,7 @@ import {
   projects,
   contact,
   disclaimer,
+  copyright,
   runs
 } from '../data/content.js'
 
@@ -22,7 +23,7 @@ defineEmits(['enter'])
     <header class="plain-hero">
       <div>
         <p class="plain-kicker">{{ person.greeting }}</p>
-        <h1>{{ person.name }}</h1>
+        <h1 tabindex="-1">{{ person.name }}</h1>
         <p class="plain-tag">{{ person.tagline }}</p>
         <p>
           <template v-for="part in person.bio" :key="part.text">
@@ -124,7 +125,7 @@ defineEmits(['enter'])
     </main>
 
     <footer class="plain-foot">
-      <p>© {{ person.name }}. All rights reserved.</p>
+      <p>{{ copyright }}</p>
       <p>{{ disclaimer }}</p>
     </footer>
   </div>
